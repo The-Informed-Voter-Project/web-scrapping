@@ -17,12 +17,12 @@ statement_against = soup.find_all(class_ = "panel-title")[2].get_text() + soup.f
 pass_req = soup.find_all(class_ = "panel-title")[4].get_text() + soup.find(id = "validationrules").get_text()
 
 paragraph_text = ballot + exp + statement_for + statement_against + pass_req
-#print(paragraph_text)
+
 
 #creating AWS bucket
-'''s3 = boto3.client('s3')
+s3 = boto3.client('s3')
 myBucket = "ballot-info"
 
 #sending info to bucket
 s3.create_bucket(Bucket = myBucket, ACL = 'public-read')
-s3.put_object(Bucket = myBucket, Key = 'KCE-ballot-2', Body = paragraph_text, ACL = "public-read")'''
+s3.put_object(Bucket = myBucket, Key = 'KCE-ballot-2', Body = paragraph_text, ACL = "public-read")
