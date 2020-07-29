@@ -37,7 +37,15 @@ for item in cans_links:
     soup = BeautifulSoup(page.text, 'html.parser')
     
     #Name, profile, bio
-    role_links = soup.find('strong')
+    role_links = soup.find("form",{"id": "frmMain"})
+    role_links = role_links.find(class_ = "container-fluid m-0 p-0")
+    role_links = role_links.find(class_ = "row m-0 p-0")
+    role_links = role_links.find(class_ = "col-md-12 m-0 p-0")
+    role_links = role_links.find(class_ = "row m-0 p-0")
+    role_links = role_links.find(class_ = "container-fluid")
+    role_links = role_links.find(class_ = "card rounded shadow bg-transparent col-xl-6 ml-auto mr-auto p-0")
+    role_links = role_links.find(api = "https://voter.votewa.gov/elections")
+    
     pic_links = soup.find('img').get('src')
     title_links = soup.find(class_ = "title").get_text()
     
