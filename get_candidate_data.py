@@ -1,58 +1,48 @@
-import requests
-from requests import get
+# -*- coding: utf-8 -*-
 from bs4 import BeautifulSoup
-from urllib.request import Request, urlopen
+import requests
+import firebase_admin
+from firebase_admin import credentials
+from firebase_admin import firestore
 
-from time import sleep
-from random import randint
 
-#initializing values
-running_for =[]
-profile_pics = []
-candidate_names = []  
+#Firestore credentials
+cred = credentials.Certificate("firstproject-1ead8-firebase-adminsdk-ttdfi-23840dd0c7.json") #Specific key for database with path
+if not firebase_admin._apps:
+    firebase_admin.initialize_app(cred)
+db = firestore.client()
 
-#scraping links from candidate page on KCE
-req = Request("https://info.kingcounty.gov/kcelections/Vote/contests/candidates.aspx?eid=21")
-html_page = urlopen(req)
+#Election candidates url
+page = requests.get("https://info.kingcounty.gov/kcelections/Vote/contests/candidates.aspx?eid=21")
+soup = BeautifulSoup(page.text, "html.parser")
 
-soup = BeautifulSoup(html_page, "lxml")
-cans_links=[]
-links = []
-for link in soup.findAll('a'):
-    links.append(link.get('href'))
+#Info on offices up for election
+role_list = soup.find_all(class_ = "list-group-item candidatelist-div")
+
+#Find all offices
+for item in role_list:
+    running_for = item.h5.text
+    can = item.find_all('a')
+    can = can[:-1]
+    #Find bio, pic, and name of candidates
+    for per in can:
+        candidates = per.text
+        url = per.get("href")
+        res = requests.get("https://voter.votewa.gov/elections/candidate.ashx?e=865&r=57369&b=45923&la=&c=17")
+        data = res.json()
+        photo = data[0]['statement']['Photo']
+        statement = data[0]['statement']['Statement']
+        soup = BeautifulSoup(statement, 'html.parser')
+        bio = soup.get_text()
     
-#Removing none values from list
-Not_none_values = filter(None.__ne__, links)
+        ballot = {
+         u'name': candidates,
+         u'pic': photo,
+         u'bio': bio       
+         }
+        
+        #Send to database        
+        db.collection(u'election').document(u'august-four').collection(u'offices').document(running_for).collection(u'candidates').document(candidates).set(ballot)
+    
 
-link_list = list(Not_none_values)
-
-#Removing links that are not related to candidate info
-for item in link_list:
-    if 'GenericVoterGuide' in item:
-        cans_links.append(item)
-
-#Looping through every candidate profile and recording info
-for item in cans_links:
-    page = requests.get(item)
-    soup = BeautifulSoup(page.text, 'html.parser')
     
-    #Name, profile, bio
-    role_links = soup.find("form",{"id": "frmMain"})
-    role_links = role_links.find(class_ = "container-fluid m-0 p-0")
-    role_links = role_links.find(class_ = "row m-0 p-0")
-    role_links = role_links.find(class_ = "col-md-12 m-0 p-0")
-    role_links = role_links.find(class_ = "row m-0 p-0")
-    role_links = role_links.find(class_ = "container-fluid")
-    role_links = role_links.find(class_ = "card rounded shadow bg-transparent col-xl-6 ml-auto mr-auto p-0")
-    role_links = role_links.find(api = "https://voter.votewa.gov/elections")
-    
-    pic_links = soup.find('img').get('src')
-    title_links = soup.find(class_ = "title").get_text()
-    
-    #Adding values to larger arrays
-    running_for.append(role_links)
-    profile_pics.append(pic_links)
-    candidate_names.append(title_links)
-    
-    #Delay timer to stop spam
-    sleep(randint(2,10))
