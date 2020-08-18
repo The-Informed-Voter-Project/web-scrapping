@@ -7,7 +7,7 @@ from firebase_admin import firestore
 
 
 #Firestore credentials
-cred = credentials.Certificate("firstproject-1ead8-firebase-adminsdk-ttdfi-23840dd0c7.json") #Specific key for database with path
+cred = credentials.Certificate() #Specific key for database with path
 if not firebase_admin._apps:
     firebase_admin.initialize_app(cred)
 db = firestore.client()
