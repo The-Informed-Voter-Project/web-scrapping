@@ -34,7 +34,7 @@ para_text = {
 #Firestore credentials
 '''NOTE: IN ORDER FOR YOU TO RUN THIS ON YOUR DEVICE, REPLACE THE JSON FILE WITH THE PATH/TO/FILE.JSON, WHERE JSON IS THE FILE CONTAINING YOUR PERSONAL KEYS FOR THE
 PROJECT. SEE https://firebase.google.com/docs/admin/setup FOR MORE INFO. HAVE A GREAT DAY'''
-cred = credentials.Certificate("firstproject-1ead8-firebase-adminsdk-ttdfi-23840dd0c7.json") #Specific key for database with path
+cred = credentials.Certificate() #Specific key for database with path
 
 if not firebase_admin._apps:
     firebase_admin.initialize_app(cred)
