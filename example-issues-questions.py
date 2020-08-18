@@ -26,7 +26,7 @@ u'Electoral' : 'Should a photo ID be required to vote? Should convicted felons h
    
      }
 #Firestore credentials
-cred = credentials.Certificate("firstproject-1ead8-firebase-adminsdk-ttdfi-23840dd0c7.json") #Specific key for database with path
+cred = credentials.Certificate() #Specific key for database with path
 
 if not firebase_admin._apps:
     firebase_admin.initialize_app(cred)
